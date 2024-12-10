@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Template for the Delivery Note -->
+        <template id="delivery_new">
+            <t t-call="web.html_container">
+
+                <t t-foreach="docs" t-as="doc">
+                    <div class="header" style="font-family: sans-serif; border: none;">
+                        <div style="display: flex; align-items: center;">
+                            <!-- Logo -->
+                            <img src="/delivery_rep/static/src/img/afr_logo.jpeg" alt="Your Logo"
+                                 style="width: 80px; height: auto; margin-right: 10px;"/>
+                            <!--                            <hr style="border-top: 1px solid black;"/>-->
+
+                            <!-- Company Address -->
+                            <div style="line-height: 1.4; border-top: 1px solid black;">
+                                <p style="margin: 0;">AFRICAN BEAUTY PALACE GENERAL TRADING LLC</p>
+                                <p style="margin: 0;">Gold, 113-482, Al Dhagaya, Gold Souk Deira - Dubai,</p>
+                                <p style="margin: 0;">4745</p>
+                                <p style="margin: 0;">Dubai DU 4745</p>
+                                <p style="margin: 0;">United Arab Emirates</p>
+
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div class="page">
+                        <!-- Custom Header Section -->
+
+                        <!-- Content Section -->
+                        <div class="content">
+                            <div class="col-10" style="padding-left: 460px;">
+                                <table class="table table-condensed"
+                                       style="width: 100%; text-align: left; border: 0px solid #ddd;">
+                                    <thead>
+
+                                        <tr>
+                                            <th>Delivery Note</th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span t-field="doc.location_id"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h1 style="text-align: left">
+                                <span t-field="doc.name" style="color: orange;"/> <!-- Delivery Reference -->
+                            </h1>
+                            <!--                            <p style="text-align: right; font-size: 22px;">-->
+                            <!--                                <strong>Delivery Note</strong>-->
+                            <!--                            </p>-->
+                            <!--                            <p style="text-align: right; font-size: 18px;">-->
+                            <!--                                <span t-field="doc.location_id.name"/> &lt;!&ndash; Dynamic Partner Name &ndash;&gt;-->
+                            <!--                            </p>-->
+
+                            <table class="table table-condensed"
+                                   style="width: 100%; text-align: left; border: 0px solid #ddd;">
+                                <thead>
+
+                                    <tr>
+                                        <th>Shipping Date:</th>
+                                        <th>Total QTY:</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <span t-field="doc.scheduled_date"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="sum(line.quantity for line in doc.move_ids_without_package)"/>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Product Table -->
+                            <table class="table table-condensed"
+                                   style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 20px;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #ddd; font-size:20px">
+                                        <th style="color: green; font-weight: bold; text-align: left; padding: 5px;">
+                                            SN
+                                        </th>
+                                        <th style="color: green; font-weight: bold; text-align: left; padding: 5px;">
+                                            Barcode
+                                        </th>
+                                        <th style="color: green; font-weight: bold; text-align: left; padding: 5px;">
+                                            Product
+                                        </th>
+                                        <th style="color: green; font-weight: bold; text-align: left; padding: 5px;">
+                                            Quantity
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="counter" t-value="0"/>
+                                    <t t-foreach="doc.move_ids_without_package" t-as="line">
+                                        <tr style="  border-bottom: 1px solid #ddd;">
+                                            <td>
+                                                <span t-esc="counter + 1"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.product_id.barcode"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.product_id.name"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.quantity"/>
+                                                Units
+                                            </td>
+                                        </tr>
+                                        <t t-set="counter" t-value="counter + 1"/>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="footer"
+                         style="font-family: sans-serif; border: none; text-align: center; border-top: 1px solid black;">
+                        <p>+97142260662 | info@africanbeautypalace.com | http://www.africanbeautypalace.com TRN:
+                            100331866200003
+                        </p>
+                    </div>
+
+
+                    <!--                    <div class="footer" style="text-align: center;">-->
+                    <!--                        <p>+97142260662 | info@africanbeautypalace.com | http://www.africanbeautypalace.com</p>-->
+                    <!--                        <p>TRN: 100331866200003</p>-->
+                    <!--                    </div>-->
+
+                </t>
+            </t>
+        </template>
+
+        <!-- Report Action -->
+        <record id="action_delivery_new" model="ir.actions.report">
+            <field name="name">Delivery Note</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">delivery_rep.delivery_new</field>
+            <field name="report_file">delivery_rep.delivery_new</field>
+            <field name="print_report_name">(object.name)</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="custom_paperformat_quotation" model="report.paperformat">
+            <field name="name">Estimation / Inspection Report Format</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">50</field>
+            <field name="margin_bottom">35</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">40</field>
+            <field name="dpi">90</field>
+            <field name="report_ids" eval="[(4,ref('sale.action_report_saleorder'))]"/>
+        </record>
+
+
+    </data>
+</odoo>
